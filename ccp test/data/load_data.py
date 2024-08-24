@@ -96,8 +96,8 @@ def load_data(data_dir, batch_size=128):
 
     dataloaders = {
         'train': DataLoader(datasets['train'], batch_size=batch_size, shuffle=True),
-        'val': DataLoader(datasets['val'], batch_size=batch_size, shuffle=True),
-        'test': DataLoader(datasets['test'], batch_size=batch_size, shuffle=True)
+        'val': DataLoader(datasets['val'], batch_size=batch_size, shuffle=False),
+        'test': DataLoader(datasets['test'], batch_size=batch_size, shuffle=False)
     }
 
     return dataloaders
