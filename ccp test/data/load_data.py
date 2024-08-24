@@ -65,18 +65,22 @@ def load_feature_extractor():
     model.eval()
     return model
 
-# 提取特征向量
+# 提取特征向量和特征矩阵
 def extract_features(model, dataloader):
-    features = []
+    feature_vectors = []
+    feature_matrices = []
     labels = []
     with torch.no_grad():
         for view1, view2, label in dataloader:
             # 提取每个视图的特征
             feature1 = model(view1).squeeze()
             feature2 = model(view2).squeeze()
-            features.append((feature1, feature2))
+            
+            # 将特征向量和矩阵添加到列表
+            feature_vectors.append((feature1.mean(dim=(1, 2)), feature2.mean(dim=(1, 2))))
+            feature_matrices.append((feature1, feature2))
             labels.append(label)
-    return features, labels
+    return feature_vectors, feature_matrices, labels
 
 # 加载数据
 def load_data(data_dir, batch_size=128):
@@ -104,12 +108,10 @@ dataloaders = load_data(data_dir)
 feature_extractor = load_feature_extractor()
 
 # 提取特征
-train_features, train_labels = extract_features(feature_extractor, dataloaders['train'])
+train_feature_vectors, train_feature_matrices, train_labels = extract_features(feature_extractor, dataloaders['train'])
 
 # 验证特征提取
-for (features1, features2), labels in zip(train_features, train_labels):
-    print(features1.shape, features2.shape, labels.shape)
+for (vector1, vector2), (matrix1, matrix2), labels in zip(train_feature_vectors, train_feature_matrices, train_labels):
+    print("Vector Shapes:", vector1.shape, vector2.shape)
+    print("Matrix Shapes:", matrix1.shape, matrix2.shape)
     break
-
-# 输入: 文件路径
-# 输出: 标准化后的数据矩阵
